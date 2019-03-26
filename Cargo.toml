@@ -1,0 +1,23 @@
+[package]
+name = "audiopus_sys"
+version = "0.1.0"
+authors = ["Lakelezz <lakelezz@protonmail.ch>"]
+keywords = ["audio", "opus", "codec"]
+categories = ["api-bindings", "compression", "encoding",
+	"multimedia::audio", "multimedia::encoding"]
+description = "FFI-Binding to Opus, dynamically or statically linked for Windows and UNIX."
+readme = "README.md"
+documentation = "https://docs.rs/audiopus_sys"
+edition = "2018"
+
+[dependencies]
+
+[build-dependencies]
+bindgen = "0.48.1"
+log = "0.4.6"
+pkg-config = "0.3.14"
+
+[features]
+default = []
+dynamic = []
+static = []

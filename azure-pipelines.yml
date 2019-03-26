@@ -1,0 +1,42 @@
+jobs:
+- template: 'azure-template-unix.yml'
+  parameters:
+    name: 'macOS_stable_static'
+    vmImage: 'xcode9-macos10.13'
+    toolchain: 'stable'
+    features: 'static'
+
+- template: 'azure-template-unix.yml'
+  parameters:
+    name: 'macOS_stable_dynamic'
+    vmImage: 'xcode9-macos10.13'
+    toolchain: 'stable'
+    features: 'dynamic'
+
+- template: 'azure-template-unix.yml'
+  parameters:
+    name: 'Linux_stable_static'
+    vmImage: 'ubuntu-16.04'
+    toolchain: 'stable'
+    features: 'static'
+
+- template: 'azure-template-unix.yml'
+  parameters:
+    name: 'Linux_stable_dynamic'
+    vmImage: 'ubuntu-16.04'
+    toolchain: 'stable'
+    features: 'dynamic'
+
+- template: 'azure-template-windows.yml'
+  parameters:
+    name: 'Windows_stable_static'
+    vmImage: 'vs2017-win2016'
+    toolchain: 'stable'
+    features: 'static'
+
+- template: 'azure-template-windows.yml'
+  parameters:
+    name: 'Windows_stable_dynamic'
+    vmImage: 'vs2017-win2016'
+    toolchain: 'stable'
+    features: 'dynamic'
