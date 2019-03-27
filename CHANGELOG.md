@@ -6,3 +6,4 @@ An overview of changes:
 
 This release fixes submodule-files published with wrong EOL-settings causing
 Unix-systems being unable to build.
+Additionally, some unused imports warnings have been resolved.
