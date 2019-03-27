@@ -1,11 +1,11 @@
 #![deny(rust_2018_idioms)]
 
-use std::env;
+use std::{env, path::Path};
 #[cfg(all(windows, target_env = "msvc"))]
 use std::path::PathBuf;
 
 #[cfg(any(unix, target_env = "gnu"))]
-use std::{io::Result, path::Path, process::Command};
+use std::process::Command;
 
 /// Outputs the library-file's prefix as word usable for actual arguments on
 /// commands or paths.
@@ -27,7 +27,7 @@ fn rustc_linking_word(is_static_link: bool) -> &'static str {
 /// 4. Installing the built Opus in `OUT_DIR`.
 #[cfg(any(unix, target_env = "gnu"))]
 fn build_opus(
-    build_directory: &std::path::Path,
+    build_directory: &Path,
     is_static: bool,
     installed_lib_directory: &Option<String>,
 ) {
@@ -43,7 +43,7 @@ fn build_opus(
         return;
     }
 
-    let opus_path = std::path::Path::new("opus")
+    let opus_path = Path::new("opus")
         .canonicalize()
         .expect("Could not canonicalise.");
 
@@ -127,7 +127,7 @@ fn build_opus(
 
 #[cfg(all(windows, target_env = "msvc"))]
 fn build_opus(
-    _build_directory: &std::path::Path,
+    _build_directory: &Path,
     is_static: bool,
     installed_lib_directory: &Option<String>,
 ) {
@@ -161,7 +161,7 @@ fn link_prebuilt_opus(is_static: bool, installed_lib_directory: &Option<String>)
         return;
     }
 
-    let mut building_path = std::path::Path::new("msvc").join(ARCHITECTURE);
+    let mut building_path = Path::new("msvc").join(ARCHITECTURE);
 
     if !is_static {
         building_path = building_path.join("dy");
@@ -292,7 +292,7 @@ fn main() {
     let build_variable =
         std::env::var("OUT_DIR").expect("Environment variable `OUT_DIR` is missing.");
 
-    let build_path = std::path::Path::new(&build_variable);
+    let build_path = Path::new(&build_variable);
 
     build_opus(&build_path, is_static, &installed_lib_directory);
 }
