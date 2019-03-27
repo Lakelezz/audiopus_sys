@@ -118,6 +118,16 @@ fn build_opus(
         panic!("Failed to install Opus via `make install`.");
     }
 
+    let command_result = Command::new("make")
+        .current_dir(&opus_path)
+        .arg("clean")
+        .status()
+        .expect("Failed to run `make clean`.");
+
+    if !command_result.success() {
+        panic!("Failed to clean up build artefacts.");
+    }
+
     println!("cargo:rustc-link-lib={}=opus", is_static_text);
     println!(
         "cargo:rustc-link-search=native={}/lib",
