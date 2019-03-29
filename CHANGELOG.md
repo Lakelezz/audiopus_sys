@@ -6,7 +6,7 @@ An overview of changes:
 
 ### **Added:**
 
-* Clean up build-artefacts after building on a Unix-system.
+* Copy Opus' source to `OUT_DIR` before building to avoid modifying and generating files outside of `OUT_DIR`.
 
 ### **Fixed:**
 * Convert Unix-relevant files' EOLs from `CRLF` to `LF` inside the `opus`-folder.
