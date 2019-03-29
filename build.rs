@@ -56,18 +56,32 @@ fn build_opus(
         is_static_text
     );
 
-    let command_result = Command::new("sh")
+    let copy_command_result = Command::new("cp")
+        .arg("-r")
+        .arg(&opus_path)
+        .arg(&build_directory)
+        .status()
+        .expect(&format!("Failed to copy Opus files to: {}", &build_directory
+            .to_str()
+            .expect("Build Path contains invalid characters.")));
+
+    if !copy_command_result.success() {
+        panic!("Failed to copy Opus files.");
+    }
+
+    let opus_path = build_directory.join("opus");
+
+    let sh_command_result = Command::new("sh")
         .arg("autogen.sh")
         .current_dir(&opus_path)
         .status()
         .expect("Failed to run `sh autogen.sh`.");
 
-    if !command_result.success() {
+    if !sh_command_result.success() {
         panic!("Failed to autogen Opus.");
     }
 
     let mut command_builder = Command::new("sh");
-
     command_builder.arg("configure");
 
     if is_static {
@@ -99,33 +113,23 @@ fn build_opus(
         panic!("Failed to configure Opus.");
     }
 
-    let command_result = Command::new("make")
+    let make_command_result = Command::new("make")
         .current_dir(&opus_path)
         .status()
         .expect("Failed to run `make`.");
 
-    if !command_result.success() {
+    if !make_command_result.success() {
         panic!("Failed to build Opus via `make`.");
     }
 
-    let command_result = Command::new("make")
-        .current_dir(&opus_path)
+    let make_install_command_result = Command::new("make")
         .arg("install")
+        .current_dir(&opus_path)
         .status()
         .expect("Failed to run `make install`.");
 
-    if !command_result.success() {
+    if !make_install_command_result.success() {
         panic!("Failed to install Opus via `make install`.");
-    }
-
-    let command_result = Command::new("make")
-        .current_dir(&opus_path)
-        .arg("clean")
-        .status()
-        .expect("Failed to run `make clean`.");
-
-    if !command_result.success() {
-        panic!("Failed to clean up build artefacts.");
     }
 
     println!("cargo:rustc-link-lib={}=opus", is_static_text);
