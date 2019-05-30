@@ -53,8 +53,8 @@ audiopus_sys = "0.1.1"
 
 [`Opus`]: https://www.opus-codec.org/
 
-[ci]: https://dev.azure.com/lakeware/audiopus_sys/_build?definitionId=4
-[ci-badge]: https://img.shields.io/azure-devops/build/lakeware/cefad0bd-3570-41d2-b886-f452aedd028c/4/master.svg?style=flat-square
+[ci]: https://dev.azure.com/lakeware/audiopus_sys/_build?definitionId=10
+[ci-badge]: https://img.shields.io/azure-devops/build/lakeware/cefad0bd-3570-41d2-b886-f452aedd028c/10/master.svg?style=flat-square
 
 [docs-badge]: https://img.shields.io/badge/docs-online-5023dd.svg?style=flat-square&colorB=32b6b7
 [docs]: https://docs.rs/audiopus_sys
