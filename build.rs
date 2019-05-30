@@ -279,10 +279,16 @@ fn is_static_build() -> bool {
         || env::var("LIBOPUS_STATIC").is_ok()
         || env::var("OPUS_STATIC").is_ok()
     {
+        println!("cargo:info=Static feature or environment variable found.");
+
         true
     } else if cfg!(feature = "dynamic") {
+        println!("cargo:info=Dynamic feature enabled.");
+
         false
     } else {
+        println!("cargo:info=No feature or environment variable found, linking by default.");
+        
         default_library_linking()
     }
 }
