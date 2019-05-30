@@ -2,6 +2,16 @@
 
 An overview of changes:
 
+## [0.1.2]
+
+This release adds the ability to bypass `pkg-config`.
+
+### **Added:**
+
+* Ignore `pkg-config` when `LIBOPUS_NO_PKG` or `OPUS_NO_PKG` is set.
+* Print the dynamic/static build cause via `cargo:info`.
+* Add missing repository-link in `Cargo.toml`.
+
 ## [0.1.1]
 
 ### **Added:**
