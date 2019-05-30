@@ -27,7 +27,10 @@ It supports x86 and x64 as dynamic or static build.
 `audiopus_sys` links to Opus 1.3 and supports Windows, Linux, and MacOS
 By default, we statically link to Windows, MacOS, and if you use the
 `musl`-environment. We will link dynamically for Linux except when using
-mentioned `musl`.
+mentioned `musl`.\
+Be aware that Unix and GNU will attempt to use `pkg_config`.
+Setting the environment variable `LIBOPUS_NO_PKG` or `OPUS_NO_PKG` will bypass
+probing for Opus via `pkg-config`.
 
 This can be altered by compiling with the `static` or `dynamic` feature having effects respective to their names. If both features are enabled,
 we will pick your system's default.
@@ -36,6 +39,9 @@ Environment variables named `LIBOPUS_STATIC` or `OPUS_STATIC` will take
 precedence over features thus overriding the behaviour. The value of these
 environment variables have no influence of the result: If one of them is set,
 statically linking will be picked.
+
+## Pkg-Config
+By default, `audiopus_sys` will use `pkg-config` on Unix or GNU.
 
 ## Pre-installed Opus
 If you have Opus pre-installed, you can set `LIBOPUS_LIB_DIR` or
@@ -47,7 +53,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-audiopus_sys = "0.1.1"
+audiopus_sys = "0.1"
 ```
 [`serenity`]: https://crates.io/crates/serenity
 

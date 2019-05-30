@@ -234,6 +234,10 @@ fn find_cargo_target_dir() -> PathBuf {
 
 #[cfg(any(unix, target_env = "gnu"))]
 fn find_via_pkg_config(is_static: bool) -> bool {
+    if env::var("LIBOPUS_NO_PKG").is_ok() || env::var("OPUS_NO_PKG").is_ok() {
+        return false;
+    }
+
     let mut pkg_config = pkg_config::Config::new();
 
     pkg_config.statik(is_static);
@@ -288,7 +292,7 @@ fn is_static_build() -> bool {
         false
     } else {
         println!("cargo:info=No feature or environment variable found, linking by default.");
-        
+
         default_library_linking()
     }
 }
