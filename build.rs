@@ -235,6 +235,8 @@ fn find_cargo_target_dir() -> PathBuf {
 #[cfg(any(unix, target_env = "gnu"))]
 fn find_via_pkg_config(is_static: bool) -> bool {
     if env::var("LIBOPUS_NO_PKG").is_ok() || env::var("OPUS_NO_PKG").is_ok() {
+        println!("cargo:info=Bypassed `pkg-config`.");
+        
         return false;
     }
 
