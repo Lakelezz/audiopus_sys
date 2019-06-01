@@ -232,6 +232,7 @@ fn find_cargo_target_dir() -> PathBuf {
     out_dir
 }
 
+#[cfg(any(unix, target_env = "gnu"))]
 fn find_via_pkg_config(is_static: bool) -> bool {
     pkg_config::Config::new()
         .statik(is_static)
