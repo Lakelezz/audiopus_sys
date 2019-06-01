@@ -2,6 +2,10 @@
 
 An overview of changes:
 
+## [0.1.3]
+
+Fixes build-issues related to `pkg-config`.
+
 ## [0.1.2]
 
 This release adds the ability to bypass `pkg-config`.
