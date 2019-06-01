@@ -2,6 +2,15 @@
 
 An overview of changes:
 
+## [0.1.4]
+
+This release fixes a problem where `audiopus_sys` could not find the
+Opus folder.
+
+### **Fix**
+* Bundle the Opus project again.
+* Added missing `cfg` on `find_via_pkg_config`.
+
 ## [0.1.3]
 
 Fixes build-issues related to `pkg-config`.
