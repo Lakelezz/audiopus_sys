@@ -232,19 +232,10 @@ fn find_cargo_target_dir() -> PathBuf {
     out_dir
 }
 
-#[cfg(any(unix, target_env = "gnu"))]
 fn find_via_pkg_config(is_static: bool) -> bool {
-    if env::var("LIBOPUS_NO_PKG").is_ok() || env::var("OPUS_NO_PKG").is_ok() {
-        println!("cargo:info=Bypassed `pkg-config`.");
-        
-        return false;
-    }
-
-    let mut pkg_config = pkg_config::Config::new();
-
-    pkg_config.statik(is_static);
-
-    pkg_config.probe("opus").is_ok()
+    pkg_config::Config::new()
+        .statik(is_static)
+        .probe("opus").is_ok()
 }
 
 /// Based on the OS or target environment we are building for,
@@ -306,12 +297,16 @@ fn main() {
 
     #[cfg(any(unix, target_env = "gnu"))]
     {
-        if find_via_pkg_config(is_static) {
-            println!("cargo:info=Found `Opus` via `pkg_config`.");
-
-            return;
+        if env::var("LIBOPUS_NO_PKG").is_ok() || env::var("OPUS_NO_PKG").is_ok() {
+            println!("cargo:info=Bypassed `pkg-config`.");
         } else {
-            println!("cargo:info=`pkg_config` could not find `Opus`.");
+            if find_via_pkg_config(is_static) {
+                println!("cargo:info=Found `Opus` via `pkg_config`.");
+
+                return;
+            } else {
+                println!("cargo:info=`pkg_config` could not find `Opus`.");
+            }
         }
     }
 
