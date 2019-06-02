@@ -2,10 +2,14 @@
 
 An overview of changes:
 
-## [0.1.4]
+## [0.1.4 and 0.1.5]
 
+v0.1.4:
 This release fixes a problem where `audiopus_sys` could not find the
 Opus folder.
+
+v0.1.5:
+Convert Unix-relevant files' EOLs from CRLF to LF inside the opus-folder.
 
 ### **Fix**
 * Bundle the Opus project again.
