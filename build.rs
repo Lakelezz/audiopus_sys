@@ -1,6 +1,6 @@
 #![deny(rust_2018_idioms)]
 
-#[cfg(all(windows, target_env = "msvc"))]
+#[cfg(any(all(windows, target_env = "msvc"), all(feature = "generate_binding")))]
 use std::path::PathBuf;
 use std::{env, path::Path};
 
