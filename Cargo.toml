@@ -15,11 +15,15 @@ edition = "2018"
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.48.1"
-log = "0.4.6"
-pkg-config = "0.3.14"
+log = "0.4"
+pkg-config = "0.3"
+
+[build-dependencies.bindgen]
+version = "0.48"
+optional = true
 
 [features]
 default = []
 dynamic = []
 static = []
+generate_binding = ["bindgen"]

@@ -47,6 +47,13 @@ If you have Opus pre-installed, you can set `LIBOPUS_LIB_DIR` or
 `OPUS_LIB_DIR` to point to the directory in which your Opus lies.
 Be aware that using an Opus other than version 1.3 may not work.
 
+# Generating The Binding
+If you want to generate the binding yourself, you can use the
+`generate_binding`-feature.
+
+Be aware, `bindgen` requires Clang and its `LIBCLANG_PATH`
+environment variable to be specified.
+
 # Installation
 Add this to your `Cargo.toml`:
 

@@ -1,8 +1,8 @@
 #![deny(rust_2018_idioms)]
 
-use std::{env, path::Path};
 #[cfg(all(windows, target_env = "msvc"))]
 use std::path::PathBuf;
+use std::{env, path::Path};
 
 #[cfg(any(unix, target_env = "gnu"))]
 use std::process::Command;
@@ -17,6 +17,28 @@ fn rustc_linking_word(is_static_link: bool) -> &'static str {
     }
 }
 
+/// Generates a new binding at `src/lib.rs` using `src/wrapper.h`.
+#[cfg(feature = "generate_binding")]
+fn generate_binding() {
+    const ALLOW_UNCONVENTIONALS: &'static str = "#![allow(non_upper_case_globals)]\n\
+                                                 #![allow(non_camel_case_types)]\n\
+                                                 #![allow(non_snake_case)]\n";
+
+    let bindings = bindgen::Builder::default()
+        .header("src/wrapper.h")
+        .raw_line(ALLOW_UNCONVENTIONALS)
+        .generate()
+        .expect("Unable to generate binding.");
+
+    let binding_target_path = PathBuf::new().join("src").join("lib.rs");
+
+    bindings
+        .write_to_file(binding_target_path)
+        .expect("Could not write binding to the file at `src/lib.rs`");
+
+    println!("cargo:info=Successfully generated binding.");
+}
+
 /// Builds Opus on Unix or GNU.
 /// If we want to build for Window's GNU-toolchain, we need to build in MSYS2.
 ///
@@ -26,11 +48,7 @@ fn rustc_linking_word(is_static_link: bool) -> &'static str {
 /// 3. Building Opus.
 /// 4. Installing the built Opus in `OUT_DIR`.
 #[cfg(any(unix, target_env = "gnu"))]
-fn build_opus(
-    build_directory: &Path,
-    is_static: bool,
-    installed_lib_directory: &Option<String>,
-) {
+fn build_opus(build_directory: &Path, is_static: bool, installed_lib_directory: &Option<String>) {
     let is_static_text = rustc_linking_word(is_static);
 
     if let Some(prebuilt_directory) = installed_lib_directory {
@@ -61,9 +79,12 @@ fn build_opus(
         .arg(&opus_path)
         .arg(&build_directory)
         .status()
-        .expect(&format!("Failed to copy Opus files to: {}", &build_directory
-            .to_str()
-            .expect("Build Path contains invalid characters.")));
+        .expect(&format!(
+            "Failed to copy Opus files to: {}",
+            &build_directory
+                .to_str()
+                .expect("Build Path contains invalid characters.")
+        ));
 
     if !copy_command_result.success() {
         panic!("Failed to copy Opus files.");
@@ -140,11 +161,7 @@ fn build_opus(
 }
 
 #[cfg(all(windows, target_env = "msvc"))]
-fn build_opus(
-    _build_directory: &Path,
-    is_static: bool,
-    installed_lib_directory: &Option<String>,
-) {
+fn build_opus(_build_directory: &Path, is_static: bool, installed_lib_directory: &Option<String>) {
     link_prebuilt_opus(is_static, installed_lib_directory);
 }
 
@@ -293,6 +310,9 @@ fn is_static_build() -> bool {
 }
 
 fn main() {
+    #[cfg(feature = "generate_binding")]
+    generate_binding();
+
     let installed_lib_directory = find_installed_opus();
 
     let is_static = is_static_build();
