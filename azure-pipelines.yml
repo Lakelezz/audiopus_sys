@@ -27,6 +27,13 @@ jobs:
     toolchain: 'stable'
     features: 'dynamic'
 
+- template: 'azure-template-unix.yml'
+  parameters:
+    name: 'Linux_stable_generate_binding'
+    vmImage: 'ubuntu-16.04'
+    toolchain: 'stable'
+    features: 'generate_binding'
+
 - template: 'azure-template-windows.yml'
   parameters:
     name: 'Windows_stable_static'
