@@ -2,6 +2,11 @@
 
 An overview of changes:
 
+## [0.1.6]
+
+This release removes the `bindgen`-dependency from the default features.
+Additionally, the `bindgen`-feature has been added in order to generate a new binding.
+
 ## [0.1.4 and 0.1.5]
 
 v0.1.4:
