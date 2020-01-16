@@ -2,6 +2,10 @@
 
 An overview of changes:
 
+## [0.1.7]
+
+Add missing `opus`-folder.
+
 ## [0.1.6]
 
 This release removes the `bindgen`-dependency from the default features.
