@@ -2,6 +2,10 @@
 
 An overview of changes:
 
+## [0.1.8]
+
+This release adds build support for FreeBSD.
+
 ## [0.1.7]
 
 Add missing `opus`-folder.
