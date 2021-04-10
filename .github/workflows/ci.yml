@@ -65,7 +65,9 @@ jobs:
       # run: cargo build --features "generate_binding"
 
       - name: Test all features
-        run: cargo test --all-features
+      # TODO: Once "generate_binding" is fixed, replace with `--all-features`
+      # again.
+        run: cargo test --features "static dynamic"
 
   docs:
     name: Build docs
