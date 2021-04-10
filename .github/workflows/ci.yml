@@ -68,38 +68,3 @@ jobs:
       # TODO: Once "generate_binding" is fixed, replace with `--all-features`
       # again.
         run: cargo test --features "static dynamic"
-
-  docs:
-    name: Build docs
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v2
-
-      - name: Install toolchain
-        id: tc
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          profile: minimal
-          override: true
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libopus-dev
-
-      - name: Setup cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: ${{ runner.os }}-gh-pages-${{ steps.tc.outputs.rustc_hash }}-${{ hashFiles('**/Cargo.toml') }}
-
-      - name: Build docs
-        env:
-          RUSTDOCFLAGS: -D broken_intra_doc_links
-        run: |
-          cargo doc --no-deps
