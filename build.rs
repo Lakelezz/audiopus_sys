@@ -28,7 +28,7 @@ fn generate_binding() {
         .header("src/wrapper.h")
         .raw_line(ALLOW_UNCONVENTIONALS)
         .generate()
-        .expect("Unable to generate binding.");
+        .expect("Unable to generate binding");
 
     let binding_target_path = PathBuf::new().join("src").join("lib.rs");
 
@@ -92,6 +92,8 @@ fn build_opus(build_directory: &Path, is_static: bool, installed_lib_directory: 
 
     let opus_path = build_directory.join("opus");
 
+    println!("Build-Stage: Autogen");
+
     let sh_command_result = Command::new("sh")
         .arg("autogen.sh")
         .current_dir(&opus_path)
@@ -101,6 +103,8 @@ fn build_opus(build_directory: &Path, is_static: bool, installed_lib_directory: 
     if !sh_command_result.success() {
         panic!("Failed to autogen Opus.");
     }
+
+    println!("Build-Stage: Configure");
 
     let mut command_builder = Command::new("sh");
     command_builder.arg("configure");
@@ -128,24 +132,51 @@ fn build_opus(build_directory: &Path, is_static: bool, installed_lib_directory: 
         )
         .current_dir(&opus_path)
         .status()
-        .expect("Failed to run `configure` Opus.");
+        .expect("Failed to run `configure` Opus");
 
     if !command_result.success() {
-        panic!("Failed to configure Opus.");
+        panic!("Failed to configure Opus: {}", command_result);
     }
 
-    let make_command_result = Command::new("make")
+    println!("Build-Stage: Create CMakeLists.txt for Opus");
+
+    let cmake_lists_command_result = Command::new("printf '%s\n' 'cmake_minimum_required(VERSION 3.1)' 'project(OpusSubModule LANGUAGES C)' 'add_subdirectory(opus_submodule)' > CMakeLists.txt")
         .current_dir(&opus_path)
         .status()
-        .expect("Failed to run `make`.");
+        .expect("Failed to `printf`");
 
-    if !make_command_result.success() {
-        panic!("Failed to build Opus via `make`.");
+    if !cmake_lists_command_result.success() {
+        panic!("Failed to create CMakeLists.txt for Opus: {}", cmake_lists_command_result);
+    }
+
+    println!("Build-Stage: Build via `cmake`");
+
+    let mkdir_command = Command::new("mkdir")
+        .arg("build")
+        .current_dir(&opus_path)
+        .status()
+        .expect("Failed to run `mkdir build`");
+
+    if !mkdir_command.success() {
+        panic!("Failed to create `build` directory for Opus: {}", mkdir_command);
+    }
+
+    let opus_build_path = opus_path.join("build");
+
+    let cmake_command_result = Command::new("cmake")
+        .current_dir(&opus_build_path)
+        .arg("..")
+        .arg("-DOPUS_BUILD_PROGRAMS=ON")
+        .status()
+        .expect("Failed to run `cmake`");
+
+    if !cmake_command_result.success() {
+        panic!("Failed to build Opus via `cmake`");
     }
 
     let make_install_command_result = Command::new("make")
         .arg("install")
-        .current_dir(&opus_path)
+        .current_dir(&opus_build_path)
         .status()
         .expect("Failed to run `make install`.");
 
