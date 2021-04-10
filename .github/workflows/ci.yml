@@ -60,8 +60,9 @@ jobs:
       - name: Build dynamic
         run: cargo build --features "dynamic"
 
-      - name: Generate bindings
-        run: cargo build --features "generate_binding"
+      # TODO: Fix for CI environment.
+      #- name: Generate bindings
+      # run: cargo build --features "generate_binding"
 
       - name: Test all features
         run: cargo test --all-features
