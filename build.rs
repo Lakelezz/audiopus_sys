@@ -1,15 +1,12 @@
 #![deny(rust_2018_idioms)]
 
-#[cfg(any(all(windows, target_env = "msvc"), all(feature = "generate_binding")))]
+#[cfg(feature = "generate_binding")]
 use std::path::PathBuf;
-use std::{env, path::Path};
-
-#[cfg(any(unix, target_env = "gnu"))]
-use std::process::Command;
+use std::{env, fmt::Display, path::Path};
 
 /// Outputs the library-file's prefix as word usable for actual arguments on
 /// commands or paths.
-fn rustc_linking_word(is_static_link: bool) -> &'static str {
+const fn rustc_linking_word(is_static_link: bool) -> &'static str {
     if is_static_link {
         "static"
     } else {
@@ -39,245 +36,30 @@ fn generate_binding() {
     println!("cargo:info=Successfully generated binding.");
 }
 
-/// Builds Opus on Unix or GNU.
-/// If we want to build for Window's GNU-toolchain, we need to build in MSYS2.
-///
-/// Building Opus consists of four steps:
-/// 1. Run `autogen.sh`.
-/// 2. Configure the generated file to prepare building.
-/// 3. Building Opus.
-/// 4. Installing the built Opus in `OUT_DIR`.
-#[cfg(any(unix, target_env = "gnu"))]
-fn build_opus(build_directory: &Path, is_static: bool, installed_lib_directory: &Option<String>) {
+fn build_opus(is_static: bool) {
+    let opus_path = Path::new("opus");
+
+    println!(
+        "cargo:info=Opus source path used: {:?}.",
+        opus_path
+            .canonicalize()
+            .expect("Could not canonicalise to absolute path")
+    );
+
+    println!("cargo:info=Building Opus via CMake.");
+    let opus_build_dir = cmake::build(opus_path);
+    link_opus(is_static, opus_build_dir.display())
+}
+
+fn link_opus(is_static: bool, opus_build_dir: impl Display) {
     let is_static_text = rustc_linking_word(is_static);
 
-    if let Some(prebuilt_directory) = installed_lib_directory {
-        println!(
-            "{}",
-            format!("cargo:rustc-link-lib={}=opus", is_static_text)
-        );
-        println!("cargo:rustc-link-search=native={}", prebuilt_directory);
-
-        return;
-    }
-
-    let opus_path = Path::new("opus")
-        .canonicalize()
-        .expect("Could not canonicalise.");
-
     println!(
-        "cargo:info=Opus source path: {:?}.",
-        &opus_path.to_string_lossy()
+        "cargo:info=Linking Opus as {} lib: {}",
+        is_static_text, opus_build_dir
     );
-    println!(
-        "cargo:info=Opus will be built as {}-library.",
-        is_static_text
-    );
-
-    let copy_command_result = Command::new("cp")
-        .arg("-r")
-        .arg(&opus_path)
-        .arg(&build_directory)
-        .status()
-        .expect(&format!(
-            "Failed to copy Opus files to: {}",
-            &build_directory
-                .to_str()
-                .expect("Build Path contains invalid characters.")
-        ));
-
-    if !copy_command_result.success() {
-        panic!("Failed to copy Opus files.");
-    }
-
-    let opus_path = build_directory.join("opus");
-
-    println!("Build-Stage: Autogen");
-
-    let sh_command_result = Command::new("sh")
-        .arg("autogen.sh")
-        .current_dir(&opus_path)
-        .status()
-        .expect("Failed to run `sh autogen.sh`.");
-
-    if !sh_command_result.success() {
-        panic!("Failed to autogen Opus.");
-    }
-
-    println!("Build-Stage: Configure");
-
-    let mut command_builder = Command::new("sh");
-    command_builder.arg("configure");
-
-    if is_static {
-        command_builder
-            .arg("--enable-static")
-            .arg("--disable-shared");
-    } else {
-        command_builder
-            .arg("--disable-static")
-            .arg("--enable-shared");
-    }
-
-    let command_result = command_builder
-        .arg("--disable-doc")
-        .arg("--disable-extra-programs")
-        .arg("--with-pic")
-        .arg("--prefix")
-        .arg(
-            build_directory
-                .to_str()
-                .expect("Build Path contains invalid characters.")
-                .replace("\\", "/"),
-        )
-        .current_dir(&opus_path)
-        .status()
-        .expect("Failed to run `configure` Opus");
-
-    if !command_result.success() {
-        panic!("Failed to configure Opus: {}", command_result);
-    }
-
-    println!("Build-Stage: Create CMakeLists.txt for Opus");
-
-    let cmake_lists_command_result = Command::new("printf '%s\n' 'cmake_minimum_required(VERSION 3.1)' 'project(OpusSubModule LANGUAGES C)' 'add_subdirectory(opus_submodule)' > CMakeLists.txt")
-        .current_dir(&opus_path)
-        .status()
-        .expect("Failed to `printf`");
-
-    if !cmake_lists_command_result.success() {
-        panic!("Failed to create CMakeLists.txt for Opus: {}", cmake_lists_command_result);
-    }
-
-    println!("Build-Stage: Build via `cmake`");
-
-    let mkdir_command = Command::new("mkdir")
-        .arg("build")
-        .current_dir(&opus_path)
-        .status()
-        .expect("Failed to run `mkdir build`");
-
-    if !mkdir_command.success() {
-        panic!("Failed to create `build` directory for Opus: {}", mkdir_command);
-    }
-
-    let opus_build_path = opus_path.join("build");
-
-    let cmake_command_result = Command::new("cmake")
-        .current_dir(&opus_build_path)
-        .arg("..")
-        .arg("-DOPUS_BUILD_PROGRAMS=ON")
-        .status()
-        .expect("Failed to run `cmake`");
-
-    if !cmake_command_result.success() {
-        panic!("Failed to build Opus via `cmake`");
-    }
-
-    let make_install_command_result = Command::new("make")
-        .arg("install")
-        .current_dir(&opus_build_path)
-        .status()
-        .expect("Failed to run `make install`.");
-
-    if !make_install_command_result.success() {
-        panic!("Failed to install Opus via `make install`.");
-    }
-
     println!("cargo:rustc-link-lib={}=opus", is_static_text);
-    println!(
-        "cargo:rustc-link-search=native={}/lib",
-        build_directory.display()
-    );
-}
-
-#[cfg(all(windows, target_env = "msvc"))]
-fn build_opus(_build_directory: &Path, is_static: bool, installed_lib_directory: &Option<String>) {
-    link_prebuilt_opus(is_static, installed_lib_directory);
-}
-
-/// Links to prebuilt Windows library-files of Opus.
-#[cfg(all(windows, target_env = "msvc"))]
-fn link_prebuilt_opus(is_static: bool, installed_lib_directory: &Option<String>) {
-    let is_static_text = rustc_linking_word(is_static);
-
-    #[cfg(target_arch = "x86")]
-    const ARCHITECTURE: &'static str = "x86";
-    #[cfg(target_arch = "x86_64")]
-    const ARCHITECTURE: &'static str = "x64";
-
-    const OPUS_DLL: &'static str = "opus.dll";
-
-    if let Some(prebuilt_directory) = installed_lib_directory {
-        println!(
-            "cargo:info=Prebuilt Opus will be linked: {}",
-            prebuilt_directory
-        );
-
-        println!(
-            "{}",
-            format!("cargo:rustc-link-lib={}=opus", is_static_text)
-        );
-        println!("cargo:rustc-link-search=native={}", prebuilt_directory);
-
-        return;
-    }
-
-    let mut building_path = Path::new("msvc").join(ARCHITECTURE);
-
-    if !is_static {
-        building_path = building_path.join("dy");
-    }
-
-    let library_path = building_path
-        .canonicalize()
-        .expect("Could not canonicalise.");
-
-    println!("cargo:info=Try to build {} library.", is_static_text);
-    println!("cargo:rustc-link-lib={}=opus", is_static_text);
-    println!("cargo:rustc-link-search=native={}", library_path.display());
-
-    if !is_static {
-        building_path = building_path.join(OPUS_DLL);
-
-        let dll_destination = find_cargo_target_dir();
-        let dll_destination = dll_destination.join(OPUS_DLL);
-
-        println!(
-            "cargo:info=Found Cargo target directory: {:?}.",
-            &dll_destination
-        );
-
-        std::fs::copy(&building_path, &dll_destination).expect(&format!(
-            "Failed to copy `opus.dll` from `{}` to `{}`.",
-            building_path.to_string_lossy(),
-            dll_destination.to_string_lossy()
-        ));
-    }
-}
-
-#[cfg(all(windows, target_env = "msvc"))]
-fn find_cargo_target_dir() -> PathBuf {
-    let pkg_name =
-        env::var("CARGO_PKG_NAME").expect("Environment variable `CARGO_PKG_NAME` is missing.");
-
-    let mut out_dir =
-        PathBuf::from(env::var("OUT_DIR").expect("Environment variable `OUT_DIR` is missing."));
-
-    loop {
-        let target_directory = out_dir.file_name().unwrap();
-
-        if target_directory.to_string_lossy().contains(&pkg_name) {
-            break;
-        } else if !out_dir.pop() {
-            panic!("Unexpected build path: {}", out_dir.to_string_lossy());
-        }
-    }
-
-    out_dir.pop();
-    out_dir.pop();
-
-    out_dir
+    println!("cargo:rustc-link-search=native={}/lib", opus_build_dir);
 }
 
 #[cfg(any(unix, target_env = "gnu"))]
@@ -344,13 +126,9 @@ fn main() {
     #[cfg(feature = "generate_binding")]
     generate_binding();
 
-    let installed_lib_directory = find_installed_opus();
-
-    let is_static = is_static_build();
-
     #[cfg(any(unix, target_env = "gnu"))]
     {
-        if env::var("LIBOPUS_NO_PKG").is_ok() || env::var("OPUS_NO_PKG").is_ok() {
+        if std::env::var("LIBOPUS_NO_PKG").is_ok() || std::env::var("OPUS_NO_PKG").is_ok() {
             println!("cargo:info=Bypassed `pkg-config`.");
         } else if find_via_pkg_config(is_static) {
             println!("cargo:info=Found `Opus` via `pkg_config`.");
@@ -361,10 +139,10 @@ fn main() {
         }
     }
 
-    let build_variable =
-        std::env::var("OUT_DIR").expect("Environment variable `OUT_DIR` is missing.");
-
-    let build_path = Path::new(&build_variable);
-
-    build_opus(&build_path, is_static, &installed_lib_directory);
+    let is_static = is_static_build();
+    if let Some(installed_opus) = find_installed_opus() {
+        link_opus(is_static, installed_opus);
+    } else {
+        build_opus(is_static);
+    }
 }

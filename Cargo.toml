@@ -17,6 +17,7 @@ edition = "2018"
 [build-dependencies]
 log = "0.4"
 pkg-config = "0.3"
+cmake = "0.1"
 
 [build-dependencies.bindgen]
 version = "0.48"
