@@ -126,6 +126,8 @@ fn main() {
     #[cfg(feature = "generate_binding")]
     generate_binding();
 
+    let is_static = is_static_build();
+
     #[cfg(any(unix, target_env = "gnu"))]
     {
         if std::env::var("LIBOPUS_NO_PKG").is_ok() || std::env::var("OPUS_NO_PKG").is_ok() {
@@ -139,7 +141,7 @@ fn main() {
         }
     }
 
-    let is_static = is_static_build();
+
     if let Some(installed_opus) = find_installed_opus() {
         link_opus(is_static, installed_opus);
     } else {
