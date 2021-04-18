@@ -1,6 +1,6 @@
 [package]
 name = "audiopus_sys"
-version = "0.1.8"
+version = "0.2.0"
 license = "ISC"
 repository = "https://github.com/lakelezz/audiopus_sys.git"
 authors = ["Lakelezz <lakelezz@protonmail.ch>"]
