@@ -1,4 +1,4 @@
-[![ci-badge][]][ci] [![docs-badge][]][docs] [![rust 1.33+ badge]][rust 1.48+ link] [![crates.io version]][crates.io link]
+[![ci-badge][]][ci] [![docs-badge][]][docs] [![rust version badge]][rust version link] [![crates.io version]][crates.io link]
 
 # About
 
@@ -68,14 +68,14 @@ audiopus_sys = "0.2"
 
 [`Opus`]: https://www.opus-codec.org/
 
-[ci]: https://dev.azure.com/lakeware/audiopus_sys/_build?definitionId=10
-[ci-badge]: https://img.shields.io/azure-devops/build/lakeware/cefad0bd-3570-41d2-b886-f452aedd028c/10/master.svg?style=flat-square
+[ci-badge]: https://img.shields.io/github/workflow/status/Lakelezz/audiopus_sys/CI?style=flat-square
+[ci]: https://github.com/Lakelezz/audiopus_sys/actions
 
 [docs-badge]: https://img.shields.io/badge/docs-online-5023dd.svg?style=flat-square&colorB=32b6b7
 [docs]: https://docs.rs/audiopus_sys
 
-[rust 1.48+ badge]: https://img.shields.io/badge/rust-1.48+-93450a.svg?style=flat-square&colorB=ff9a0d
-[rust 1.48+ link]: https://blog.rust-lang.org/2020/11/19/Rust-1.48.html
+[rust version badge]: https://img.shields.io/badge/rust-1.51+-93450a.svg?style=flat-square&colorB=ff9a0d
+[rust version link]: hhttps://blog.rust-lang.org/2021/03/25/Rust-1.51.0.html
 
 [crates.io link]: https://crates.io/crates/audiopus_sys
 [crates.io version]: https://img.shields.io/crates/v/audiopus_sys.svg?style=flat-square&colorB=b73732
