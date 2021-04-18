@@ -37,7 +37,8 @@ fn generate_binding() {
 }
 
 fn build_opus(is_static: bool) {
-    let opus_path = Path::new("opus");
+    let root = std::env::var("CARGO_MANIFEST_DIR").expect("Missing `CARGO_MANIFEST_DIR`");
+    let opus_path = Path::new(&root).join("opus");
 
     println!(
         "cargo:info=Opus source path used: {:?}.",
@@ -140,7 +141,6 @@ fn main() {
             println!("cargo:info=`pkg_config` could not find `Opus`.");
         }
     }
-
 
     if let Some(installed_opus) = find_installed_opus() {
         link_opus(is_static, installed_opus);
