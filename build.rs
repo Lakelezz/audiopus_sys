@@ -37,8 +37,7 @@ fn generate_binding() {
 }
 
 fn build_opus(is_static: bool) {
-    let root = std::env::var("CARGO_MANIFEST_DIR").expect("Missing `CARGO_MANIFEST_DIR`");
-    let opus_path = Path::new(&root).join("opus");
+    let opus_path = Path::new("opus");
 
     println!(
         "cargo:info=Opus source path used: {:?}.",
