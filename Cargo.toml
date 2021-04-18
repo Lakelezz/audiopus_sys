@@ -20,7 +20,7 @@ pkg-config = "0.3"
 cmake = "0.1"
 
 [build-dependencies.bindgen]
-version = "0.48"
+version = "0.58"
 optional = true
 
 [features]
