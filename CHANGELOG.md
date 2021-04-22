@@ -2,6 +2,13 @@
 
 An overview of changes:
 
+## [0.2.0]
+
+* Now requires `cmake`.
+* Windows will build via `cmake` too.
+* Windows pre-built binaries have been removed.
+* Updated `bindgen` to version `0.58`.
+
 ## [0.1.8]
 
 This release adds build support for FreeBSD.
