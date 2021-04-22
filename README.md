@@ -75,7 +75,7 @@ audiopus_sys = "0.2"
 [docs]: https://docs.rs/audiopus_sys
 
 [rust version badge]: https://img.shields.io/badge/rust-1.51+-93450a.svg?style=flat-square&colorB=ff9a0d
-[rust version link]: hhttps://blog.rust-lang.org/2021/03/25/Rust-1.51.0.html
+[rust version link]: https://blog.rust-lang.org/2021/03/25/Rust-1.51.0.html
 
 [crates.io link]: https://crates.io/crates/audiopus_sys
 [crates.io version]: https://img.shields.io/crates/v/audiopus_sys.svg?style=flat-square&colorB=b73732
