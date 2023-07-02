@@ -48,6 +48,15 @@ fn build_opus(is_static: bool) {
 
     println!("cargo:info=Building Opus via CMake.");
     let mut cmake_config = cmake::Config::new(opus_path);
+
+    if let Ok(android_target) = env::var("CARGO_NDK_ANDROID_TARGET") {
+        cmake_config.define("ANDROID_ABI", android_target);
+
+        if let Ok(toolchain_file) = env::var("CARGO_NDK_CMAKE_TOOLCHAIN_PATH") {
+            cmake_config.define("CMAKE_TOOLCHAIN_FILE", toolchain_file);
+        }
+    }
+
     if let Ok(value) = env::var("CMAKE_OSX_SYSROOT") {
         cmake_config.configure_arg(format!("-DCMAKE_OSX_SYSROOT={value}"));
     }
