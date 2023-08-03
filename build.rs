@@ -53,18 +53,17 @@ fn build_opus(is_static: bool) {
 
 fn link_opus(is_static: bool, opus_build_dir: impl Display) {
     let is_static_text = rustc_linking_word(is_static);
-    let opus_build_dir = if !is_static {
-        format!("{}/lib", opus_build_dir)
-    } else {
-        format!("{}", opus_build_dir)
-    };
-
     println!(
         "cargo:info=Linking Opus as {} lib: {}",
         is_static_text, opus_build_dir
     );
+
     println!("cargo:rustc-link-lib={}=opus", is_static_text);
-    println!("cargo:rustc-link-search=native={}", opus_build_dir);
+    if is_static {
+        println!("cargo:rustc-link-search=native={}", opus_build_dir);
+    } else {
+        println!("cargo:rustc-link-search=native={}/lib", opus_build_dir);
+    }
 }
 
 #[cfg(any(unix, target_env = "gnu"))]
