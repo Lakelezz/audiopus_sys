@@ -59,7 +59,7 @@ fn link_opus(is_static: bool, opus_build_dir: impl Display) {
     );
 
     println!("cargo:rustc-link-lib={}=opus", is_static_text);
-    if is_static && find_installed_opus().is_none() {
+    if is_static && find_installed_opus().is_some() {
         println!("cargo:rustc-link-search=native={}", opus_build_dir);
     } else {
         println!("cargo:rustc-link-search=native={}/lib", opus_build_dir);
