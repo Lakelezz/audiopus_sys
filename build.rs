@@ -1,5 +1,6 @@
 #![deny(rust_2018_idioms)]
 
+use cmake::Config;
 #[cfg(feature = "generate_binding")]
 use std::path::PathBuf;
 use std::{env, fmt::Display, path::Path};
@@ -12,6 +13,12 @@ const fn rustc_linking_word(is_static_link: bool) -> &'static str {
     } else {
         "dylib"
     }
+}
+
+fn is_ios_sim_build() -> bool {
+    env::var("TARGET")
+        .map(|it| it.eq("aarch64-apple-ios-sim") || it.eq("x86_64-apple-ios"))
+        .unwrap_or(false)
 }
 
 /// Generates a new binding at `src/lib.rs` using `src/wrapper.h`.
@@ -47,7 +54,11 @@ fn build_opus(is_static: bool) {
     );
 
     println!("cargo:info=Building Opus via CMake.");
-    let opus_build_dir = cmake::build(opus_path);
+    let mut cmake_config = Config::new(opus_path);
+    if is_ios_sim_build() {
+        cmake_config.define("CMAKE_OSX_SYSROOT", "iphonesimulator");
+    }
+    let opus_build_dir = cmake_config.build();
     link_opus(is_static, opus_build_dir.display())
 }
 
