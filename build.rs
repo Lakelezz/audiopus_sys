@@ -62,7 +62,7 @@ fn link_opus(is_static: bool, opus_build_dir: impl Display) {
     println!("cargo:rustc-link-search=native={}/lib", opus_build_dir);
 }
 
-#[cfg(any(unix, target_env = "gnu"))]
+#[cfg(feature = "pkg-config")]
 fn find_via_pkg_config(is_static: bool) -> bool {
     pkg_config::Config::new()
         .statik(is_static)
@@ -128,7 +128,7 @@ fn main() {
 
     let is_static = is_static_build();
 
-    #[cfg(any(unix, target_env = "gnu"))]
+    #[cfg(feature = "pkg-config")]
     {
         if std::env::var("LIBOPUS_NO_PKG").is_ok() || std::env::var("OPUS_NO_PKG").is_ok() {
             println!("cargo:info=Bypassed `pkg-config`.");
