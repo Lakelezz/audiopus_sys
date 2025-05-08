@@ -1,6 +1,6 @@
 [package]
 name = "audiopus_sys"
-version = "0.2.1"
+version = "0.2.2"
 license = "ISC"
 repository = "https://github.com/lakelezz/audiopus_sys.git"
 authors = ["Lakelezz <lakelezz@protonmail.ch>"]
@@ -10,17 +10,17 @@ categories = ["api-bindings", "compression", "encoding",
 description = "FFI-Binding to Opus, dynamically or statically linked for Windows and UNIX."
 readme = "README.md"
 documentation = "https://docs.rs/audiopus_sys"
-edition = "2018"
+edition = "2024"
 
 [dependencies]
 
 [build-dependencies]
-log = "0.4"
-pkg-config = "0.3"
-cmake = "0.1"
+log = "^0.4"
+pkg-config = "^0.3"
+cmake = "^0.1"
 
 [build-dependencies.bindgen]
-version = "0.58"
+version = "0.71.1"
 optional = true
 
 [features]

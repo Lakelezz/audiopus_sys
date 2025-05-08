@@ -2,7 +2,7 @@
 
 # About
 
-`audiopus_sys` is an FFI-Rust-binding to [`Opus`] version 1.3.
+`audiopus_sys` is an FFI-Rust-binding to [`Opus`] version 1.5.2.
 
 Orginally, this sys-crate was made to empower the [`serenity`]-crate to build audio features on Windows, Linux, and Mac. However, it's not limited to that.
 
@@ -25,7 +25,7 @@ see [**Pre-installed Opus**](#Generating-The-Binding) below for further
 instructions.
 
 ## Linking
-`audiopus_sys` links to Opus 1.3 and supports Windows, Linux, and MacOS
+`audiopus_sys` links to Opus 1.5.2 and supports Windows, Linux, and MacOS
 By default, we statically link to Windows, MacOS, and if you use the
 `musl`-environment. We will link dynamically for Linux except when using
 mentioned `musl`.
@@ -48,7 +48,7 @@ probing for Opus via `pkg-config`.
 If you have Opus pre-installed, you can set `LIBOPUS_LIB_DIR` or
 `OPUS_LIB_DIR` to the directory containing Opus.
 
-Be aware that using an Opus other than version 1.3 may not work.
+Be aware that using an Opus other than version 1.5.2 may not work.
 
 # Generating The Binding
 If you want to generate the binding yourself, you can use the
