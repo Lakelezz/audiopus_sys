@@ -47,7 +47,9 @@ fn build_opus(is_static: bool) {
     );
 
     println!("cargo:info=Building Opus via CMake.");
-    let opus_build_dir = cmake::build(opus_path);
+    let mut config = cmake::Config::new(opus_path);
+    config.define("CMAKE_POLICY_VERSION_MINIMUM", "3.5");
+    let opus_build_dir = config.build();
     link_opus(is_static, opus_build_dir.display())
 }
 
